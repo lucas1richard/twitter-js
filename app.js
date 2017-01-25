@@ -18,6 +18,7 @@ nunjucks.configure('views', { noCache: true });
 
 // Handle Server Error
 app.use((err, req, res, next) => {
+  console.log(err.stack);
   console.log(chalk.yellow(req.method), chalk.red(chalk.bold(req.url)), chalk.red(500));
   next();
 });
