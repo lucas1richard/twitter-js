@@ -45,4 +45,4 @@ data = data.map((tweet, index) => {
   return tweet;
 });
 
-console.log(data);
+// console.log(data);

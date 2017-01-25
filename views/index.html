@@ -12,6 +12,20 @@
       100 followers
     </div>
     <div class="col-md-9">
+      {% if showForm %}
+      <div class="form form-inline">
+
+        <form action="/tweets" method="POST" class="form form-inline">
+          <label for="name_field">Name:</label>
+          <input name="name" type="text" value="{{name}}" id="name_field" class="form-control" style="width: 350px;" />
+
+          <label for="text_field">Text:</label>
+          <input name="text" type="text" id="text_field" class="form-control" style="width: 350px;" />
+
+          <input type="submit" value="Submit" class="btn btn-primary" />
+        </form>
+      </div>
+      {% endif %}
 
       <!-- display tweets here -->
       <ul class="list-group">
