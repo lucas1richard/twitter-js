@@ -10,6 +10,7 @@ let urlencodedParser = bodyParser.urlencoded({ extended: false });
 module.exports = function(io) {
 
   router.use('/stylesheets', express.static(path.join(__dirname, '../public/stylesheets')));
+  router.use('/vendor', express.static(path.join(__dirname, '../node_modules')));
 
   router.get('/', function (req, res) {
     let tweets = tweetBank.list();
