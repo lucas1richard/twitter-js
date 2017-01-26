@@ -6,6 +6,9 @@ const chalk = require('chalk');
 const nunjucks = require('nunjucks');
 const routes = require('./routes');
 const socketio = require('socket.io');
+let text = require('./data.json');
+
+console.log(text);
 
 const port = process.env.PORT || 3000;
 let server = app.listen(port, () => {

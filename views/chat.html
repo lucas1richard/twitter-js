@@ -1,0 +1,102 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+  <div class="page-header">
+    <h1>Welcome to Twitter.js!</h1>
+  </div>
+  <div class="row">
+    <div class="col-md-3">
+      <img src="https://pbs.twimg.com/profile_images/2450268678/olxp11gnt09no2y2wpsh_normal.jpeg"><br>
+      <b>Your Name</b><br>
+      100 followers
+    </div>
+    <div class="col-md-9">
+      {% if showForm %}
+      <div class="form form-inline">
+
+        <form class="form form-inline" id="setName">
+          <div class="input-group">
+            <label for="name_field" class="input-group-addon">Name:</label>
+            <input type="text" id="name_field" class="form-control" />
+          </div>
+          <input type="submit" value="Submit" id="nameSubmit" class="btn btn-info" />
+        </form>
+
+        <form class="form form-inline" id="chatForm">
+          <div class="input-group">
+            <label for="text_field" class="input-group-addon">Text:</label>
+            <input name="text" type="text" id="text_field" class="form-control" style="width: 350px;" />
+          </div>
+          <input type="submit" value="Submit" class="btn btn-primary" />
+        </form>
+      </div>
+      {% endif %}
+
+      <!-- display tweets here -->
+      <ul class="list-group" id="chatDeck">
+        {% for message in chat %}
+          <li class="list-group-item">
+          {{message.name}}
+          <small>({{message.date}})</small>
+          -
+          {{message.msg}}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+<script defer>
+  var nameField = document.getElementById('name_field');
+  var textField = document.getElementById('text_field');
+  var chatDeck = document.getElementById('chatDeck');
+  var setName = document.getElementById('setName');
+
+  var socket = io.connect('/chat');
+
+  setName.onsubmit = function(ev) {
+    ev.preventDefault();
+    if (!nameField.value.length) return false;
+    nameField.disabled = true;
+    document.getElementById('nameSubmit').disabled = true;
+    socket.emit('newName', nameField.value);
+  };
+
+  document.getElementById('chatForm').onsubmit = function(ev) {
+    ev.preventDefault();
+    console.log('submitted');
+    if (textField.value.length && nameField.value.length && nameField.disabled) {
+      socket.emit('sendNewMessage', {name: nameField.value, date: Date(), msg: textField.value});
+    }
+  };
+  socket.on('connect', function(){
+    console.log('connected to chat server via WebSockets!');
+  });
+  socket.on('newMsg', function (msg) {
+    newMessage([msg.name, /*msg.date,*/ msg.msg].join(' - '), '');
+    console.log(msg);
+    textField.value = '';
+    textField.focus();
+  });
+  socket.on('nameAdded', function (name) {
+    newMessage(name + ' joined the chat', 'list-group-item-info');
+    console.log(name);
+    textField.value = '';
+    textField.focus();
+  });
+  socket.on('userLeft', function (name) {
+    newMessage(name + ' left the chat', 'list-group-item-warning');
+    console.log(name);
+    textField.value = '';
+    textField.focus();
+  });
+
+  function newMessage(txt, clss) {
+    var li = document.createElement('li');
+    li.innerText = txt;
+    li.className = 'list-group-item ' + clss;
+    chatDeck.appendChild(li);
+  }
+</script>
+
+{% endblock %}
+
